@@ -8,7 +8,7 @@ from sklearn.datasets import make_blobs
 import writer
 
 
-class Dataset:
+class Dataset:  # TODO: Investigate replacing this with pd.DataFrame
     features: any
     clusters: any
     headings: list
@@ -19,9 +19,12 @@ class Dataset:
         self.headings = feature_headings(features[0].__len__())
 
 
-"This is from the Data Clustering textbook, Fig. 7.9"
-__prebaked_data__ = numpy.array(numpy.float64([[1.0, 2.0], [1.0, 2.5], [3.0, 1.0], [4.0, 0.5], [4.0, 2.0]]))
-prebaked_data = Dataset(__prebaked_data__, numpy.array(numpy.int64([1, 1, 1, 1, 1])))
+def prebaked_data() -> Dataset:
+    "This is from the Data Clustering textbook, Fig. 7.9"
+    __prebaked_data__ = numpy.array(numpy.float64([[1.0, 2.0], [1.0, 2.5], [3.0, 1.0], [4.0, 0.5], [4.0, 2.0]]))
+    prebaked_data = Dataset(__prebaked_data__, numpy.array(numpy.int64([1, 1, 1, 1, 1])))
+    return prebaked_data
+
 
 def generate_example() -> Dataset:
     features, clusters = make_blobs(n_samples=2000, n_features=10, centers=5, cluster_std=0.4, shuffle=True)

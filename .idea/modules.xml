@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ecseclusterpy.iml" filepath="$PROJECT_DIR$/.idea/ecseclusterpy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../scipy/.idea/scipy.iml" filepath="$PROJECT_DIR$/../scipy/.idea/scipy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../seaborn/.idea/seaborn.iml" filepath="$PROJECT_DIR$/../seaborn/.idea/seaborn.iml" />
     </modules>
   </component>
 </project>
