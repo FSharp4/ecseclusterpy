@@ -1,17 +1,20 @@
+import warnings
 from math import sqrt, fabs
 from numbers import Number
 from typing import Union
 
-from numpy import ndarray, asarray
+import numpy as np
 
 
+@DeprecationWarning
 class Datapoint:
-    data: ndarray
+    data: np.ndarray
 
     def __init__(self, point: any):
-        self.data = asarray(point)
+        self.data = np.asarray(point)
 
 
+# @DeprecationWarning
 class Cluster:
     index: Number = -1  # Sentinel for 'not set'
     points: any
@@ -24,17 +27,17 @@ class Cluster:
         self.points = points
         tmp = self.points[0]
         ndim = 1
-        if isinstance(tmp, ndarray):
+        if isinstance(tmp, np.ndarray):
             ndim = tmp.__len__()
         elif not is_single_dim:
             ndim = points.__len__()
-            self.points = ndarray([1, ndim])
+            self.points = np.ndarray([1, ndim])
             self.points[0] = points
         else:
             mean = sum(points)
             return
 
-        self.mean = ndarray([ndim])
+        self.mean = np.ndarray([ndim])
         for dim in range(ndim):
             dimensional_value_sum = 0
             for point in self.points:
@@ -44,9 +47,9 @@ class Cluster:
 
         self.size = self.points.__len__()
 
-    def distance_to(self, position: Union[ndarray, Number]) -> float:
+    def distance_to(self, position: Union[np.ndarray, Number]) -> float:
         distance: float = 0
-        if isinstance(position, ndarray) and isinstance(self.mean, ndarray):
+        if isinstance(position, np.ndarray) and isinstance(self.mean, np.ndarray):
             for i in range(position.__len__()):
                 distance = distance + (position[i] - self.mean[i]) ** 2
 
@@ -58,7 +61,7 @@ class Cluster:
 
 
 def merge(c1, c2) -> Cluster:
-    points = ndarray([c1.points.__len__() + c2.points.__len__(), c2.points[0].__len__()])
+    points = np.ndarray([c1.points.__len__() + c2.points.__len__(), c2.points[0].__len__()])
     if c1.points.__len__() != 0:
         points[0:c1.points.__len__()] = c1.points
 
@@ -66,3 +69,11 @@ def merge(c1, c2) -> Cluster:
         points[c1.points.__len__():c1.points.__len__() + c2.points.__len__()] = c2.points
 
     return Cluster(points)
+
+
+def v_distance(p1: np.ndarray, p2: np.ndarray) -> np.ndarray:
+    return np.sqrt(np.sum(np.square(p1 - p2), axis=1))
+
+
+def s_distance_squared(p1, p2):
+    return sum(np.square(p1 - p2))
