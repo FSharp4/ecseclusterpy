@@ -6,14 +6,6 @@ from typing import Union
 import numpy as np
 
 
-@DeprecationWarning
-class Datapoint:
-    data: np.ndarray
-
-    def __init__(self, point: any):
-        self.data = np.asarray(point)
-
-
 # @DeprecationWarning
 class Cluster:
     index: Number = -1  # Sentinel for 'not set'
