@@ -51,6 +51,10 @@ def process(data, name):
     hierarchy.dendrogram(Z2, ax=axes[1], orientation='top')
     axes[0].set_title('Scipy/Seaborn')
     axes[1].set_title('Custom')
+    axes[0].set_xlabel("Cluster Index")
+    axes[1].set_xlabel("Cluster Index")
+    axes[0].set_ylabel("Euclidean Distance between Cluster Centers")
+    axes[1].set_ylabel("Euclidean Distance between Cluster Centers")
     plt.show()
     return [t1 - t0, t2 - t1]
     # return sum(Z1[:, 2] - Z2[:, 2])
@@ -98,6 +102,7 @@ if __name__ == '__main__':
     for i in range(len(i_scipy)):
         print(f"{i_scipy[i]} \t {time_custom[i]} \t {time_scipy[i]}")
 
+    little()
     print("Done")
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
