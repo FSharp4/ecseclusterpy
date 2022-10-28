@@ -1,9 +1,12 @@
 import math
 
 import numpy
+from scipy.spatial.distance import pdist, squareform
+
+
 # import numpy as np
 
-from Cluster import v_distance, s_distance_squared
+from data.vector_supplement import v_distance, s_distance_squared
 
 
 def _pdist(data):
@@ -55,15 +58,18 @@ def positive_min(data: numpy.ndarray) -> tuple[float, int]:
     return min_entry, min_idx
 
 
-def ward(data: numpy.ndarray) -> numpy.ndarray:
+def linkage(data: numpy.ndarray, naive: bool = False) -> numpy.ndarray:
+    if naive:
+        return _linkage_naive(data)
+
     n = data.shape[0]
-    activity_size_matrix = numpy.zeros([n, 2])
-    for i in range(n):
-        activity_size_matrix[i] = [i, 1]  # All clusters start with one point
-        """
-        Format: original cluster id (for indexing in clusters), new cluster id (for linkage matrix), cardinality
-        """
-    distance_matrix: numpy.ndarray[numpy.ndarray[float]] = _squareform(_pdist(data))
+    activity_size_matrix = numpy.ones([n, 2])
+    activity_size_matrix[:, 0] = numpy.arange(0, n)
+    """
+    Format: original cluster id (for indexing in clusters), new cluster id (for linkage matrix), cardinality
+    """
+    distance_matrix: numpy.ndarray[numpy.ndarray[float]] = numpy.square(squareform(pdist(data)))
+    distance_matrix[distance_matrix == 0] = math.nan
     linkage_matrix = numpy.ndarray([n - 1, 4])
     stack_clusters_indexes = []
     """
@@ -166,3 +172,42 @@ def ward(data: numpy.ndarray) -> numpy.ndarray:
             sorted_linkage_matrix[j][0], sorted_linkage_matrix[j][1] = sorted_linkage_matrix[j][1], \
                                                                        sorted_linkage_matrix[j][0]
     return sorted_linkage_matrix
+
+
+def _linkage_naive(data: numpy.ndarray) -> numpy.ndarray:
+    n = len(data)
+    activity_size_matrix = numpy.ones([n, 2])
+    activity_size_matrix[:, 0] = numpy.arange(0, n)
+    distance_matrix = squareform(pdist(data))
+    distance_matrix[distance_matrix == 0] = math.nan
+    linkage_matrix = numpy.ndarray([n - 1, 4])
+    for iteration in range(n - 1):
+        min_D = numpy.nanmin(distance_matrix)
+        min_coord = numpy.asarray(distance_matrix == min_D).nonzero()[0]
+        min_coord.sort()
+        low_cluster_idx = min_coord[0]
+        high_cluster_idx = min_coord[1]
+        true_cluster_idces = numpy.array(
+            [activity_size_matrix[low_cluster_idx][0], activity_size_matrix[high_cluster_idx][0]]
+        )
+        true_cluster_idces.sort()
+        size_i = activity_size_matrix[low_cluster_idx, 1]
+        size_j = activity_size_matrix[high_cluster_idx, 1]
+        merged_size = size_i + size_j
+        linkage_matrix[iteration] = [true_cluster_idces[0], true_cluster_idces[1], min_D, merged_size]
+        distance_vector = distance_matrix[low_cluster_idx, :]
+        size_k = activity_size_matrix[:, 1]
+        s_ijk = merged_size + size_k
+        distance_vector = (size_k + size_i) / s_ijk * distance_vector + (size_k + size_j) / s_ijk \
+                          * distance_matrix[high_cluster_idx, :] - size_k / s_ijk * distance_vector[high_cluster_idx]
+
+        distance_matrix[high_cluster_idx, :] = math.nan
+        distance_matrix[:, high_cluster_idx] = math.nan
+        distance_matrix[low_cluster_idx, :] = distance_vector
+        distance_matrix[:, low_cluster_idx] = distance_vector
+
+        activity_size_matrix[high_cluster_idx] = [-1, 0]
+        activity_size_matrix[low_cluster_idx] = [n + iteration, merged_size]
+        iteration += 1
+
+    return linkage_matrix

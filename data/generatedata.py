@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.datasets import make_blobs
 
-import writer
+from data.io import writer
 
 
 class Dataset:  # TODO: Investigate replacing this with pd.DataFrame

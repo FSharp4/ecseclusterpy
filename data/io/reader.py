@@ -3,7 +3,7 @@ import csv
 import matplotlib.pyplot as plt
 import numpy
 
-import generatedata
+from data import generatedata
 
 
 def read(filename) -> generatedata.Dataset:

@@ -16,16 +16,6 @@ series_name = "series"
 store = {}
 
 
-# def log_matrix(matrix: numpy.ndarray):
-#     global series_iteration
-#     global series_name
-#     if (len(matrix.shape) == 2):
-#         if os.path.exists("out") == False:
-#             os.makedirs("out")
-#
-#         numpy.savetxt(f"out/{series_name}_{series_iteration}.csv", matrix, delimiter=", ")
-#         series_iteration += 1
-
 def store_matrix(matrix: numpy.ndarray):
     global store
     if series_name not in store:

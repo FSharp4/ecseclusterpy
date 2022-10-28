@@ -7,9 +7,9 @@
 # read_from_existing = True
 import time
 
-import generatedata
+from data import generatedata
 # from ward import ward
-from nnchain import ward
+from clustering.uniclustering import linkage
 from matplotlib import pyplot as plt
 from scipy.cluster import hierarchy
 
@@ -25,7 +25,7 @@ def trial_custom(size):
     print(f"Custom trial of size {size}")
     data = generatedata.generate(n_samples=size, n_features=3, centers=1, cluster_std=0.8, shuffle=True).features
     t0 = time.time()
-    Z = ward(data)
+    Z = linkage(data)
     t1 = time.time()
     return t1 - t0
 
@@ -44,7 +44,7 @@ def process(data, name):
     t0 = time.time()
     Z1 = hierarchy.linkage(data, method="ward")
     t1 = time.time()
-    Z2 = ward(data)
+    Z2 = linkage(data)
     t2 = time.time()
     fig, axes = plt.subplots(1, 2, figsize=(15, 6))
     hierarchy.dendrogram(Z1, ax=axes[0], orientation='top')
@@ -85,18 +85,19 @@ def little():  # Size 5
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    import numpy as np
-    i_scipy = np.logspace(1, 3, num=30, endpoint=True, dtype=int)
-    time_custom = np.float64(i_scipy)
-    time_scipy = np.float64(i_scipy)
-    for i in range(0, len(i_scipy)):
-        time_custom[i] = trial_custom(i_scipy[i])
-
-    for i in range(0, len(i_scipy)):
-        time_scipy[i] = trial_scipy(i_scipy[i])
-
-    for i in range(len(i_scipy)):
-        print(f"{i_scipy[i]} \t {time_custom[i]} \t {time_scipy[i]}")
+    little()
+    # import numpy as np
+    # i_scipy = np.logspace(1, 3, num=30, endpoint=True, dtype=int)
+    # time_custom = np.float64(i_scipy)
+    # time_scipy = np.float64(i_scipy)
+    # for i in range(0, len(i_scipy)):
+    #     time_custom[i] = trial_custom(i_scipy[i])
+    #
+    # for i in range(0, len(i_scipy)):
+    #     time_scipy[i] = trial_scipy(i_scipy[i])
+    #
+    # for i in range(len(i_scipy)):
+    #     print(f"{i_scipy[i]} \t {time_custom[i]} \t {time_scipy[i]}")
 
     print("Done")
 
