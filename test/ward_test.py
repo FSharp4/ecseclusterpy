@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 from scipy.cluster import hierarchy
 
@@ -12,7 +14,9 @@ class WardTest:
     def do(self):
         z1 = uniclustering.linkage(self.data)
         z2 = uniclustering.linkage(self.data, naive=True)
-        return PASS if np.allclose(z1, z2) else FAIL
+        z3 = hierarchy.linkage(self.data, method="ward")
+        status = PASS if np.allclose(z1, z2) else FAIL
+        return status
 
 
 PASS = "Pass"

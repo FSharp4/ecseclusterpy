@@ -178,7 +178,7 @@ def _linkage_naive(data: numpy.ndarray) -> numpy.ndarray:
     n = len(data)
     activity_size_matrix = numpy.ones([n, 2])
     activity_size_matrix[:, 0] = numpy.arange(0, n)
-    distance_matrix = squareform(pdist(data))
+    distance_matrix = numpy.square(squareform(pdist(data)))
     distance_matrix[distance_matrix == 0] = math.nan
     linkage_matrix = numpy.ndarray([n - 1, 4])
     for iteration in range(n - 1):
@@ -194,7 +194,7 @@ def _linkage_naive(data: numpy.ndarray) -> numpy.ndarray:
         size_i = activity_size_matrix[low_cluster_idx, 1]
         size_j = activity_size_matrix[high_cluster_idx, 1]
         merged_size = size_i + size_j
-        linkage_matrix[iteration] = [true_cluster_idces[0], true_cluster_idces[1], min_D, merged_size]
+        linkage_matrix[iteration] = [true_cluster_idces[0], true_cluster_idces[1], math.sqrt(min_D), merged_size]
         distance_vector = distance_matrix[low_cluster_idx, :]
         size_k = activity_size_matrix[:, 1]
         s_ijk = merged_size + size_k
