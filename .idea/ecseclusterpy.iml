@@ -10,4 +10,10 @@
     <orderEntry type="module" module-name="scipy" />
     <orderEntry type="module" module-name="seaborn" />
   </component>
+  <component name="PackageRequirementsSettings">
+    <option name="requirementsPath" value="" />
+  </component>
+  <component name="TestRunnerService">
+    <option name="PROJECT_TEST_RUNNER" value="Unittests" />
+  </component>
 </module>

@@ -19,7 +19,7 @@ class Dataset:  # TODO: Investigate replacing this with pd.DataFrame
         self.headings = feature_headings(features[0].__len__())
 
 
-def prebaked_data() -> Dataset:
+def generate_gan() -> Dataset:
     "This is from the Data Clustering textbook, Fig. 7.9"
     __prebaked_data__ = numpy.array(numpy.float64([[1.0, 2.0], [1.0, 2.5], [3.0, 1.0], [4.0, 0.5], [4.0, 2.0]]))
     prebaked_data = Dataset(__prebaked_data__, numpy.array(numpy.int64([1, 1, 1, 1, 1])))
@@ -81,6 +81,10 @@ def feature_headings(n: int) -> list:
         headings.append(f"Feature {ii}")
 
     return headings
+
+
+def generate_romesburg() -> numpy.ndarray:
+    return numpy.array([[10, 5], [20, 20], [30, 10], [30, 15], [5, 10]], dtype=int)
 
 
 if __name__ == '__main__':

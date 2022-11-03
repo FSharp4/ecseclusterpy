@@ -3,7 +3,7 @@ import unittest
 from scipy.cluster import hierarchy
 
 from clustering import uniclustering
-from data.generatedata import prebaked_data, prebaked_data2, generate
+from data.generatedata import generate_gan, prebaked_data2, generate
 
 
 class WardTest():
@@ -25,8 +25,9 @@ little = generate(n_samples=10, n_features=3, centers=5, cluster_std=0.8, shuffl
 medium = generate(n_samples=50, n_features=5, centers=10, cluster_std=0.8, shuffle=True).features
 big = generate(n_samples=100, n_features=10, centers=15, cluster_std=0.8, shuffle=True).features
 huge = generate(n_samples=500, n_features=15, centers=20, cluster_std=0.8, shuffle=True).features
-pb1 = prebaked_data().features
+pb1 = generate_gan().features
 pb2 = prebaked_data2()
+
 
 class TestWardMethods(unittest.TestCase):
 
@@ -75,5 +76,5 @@ class TestWardMethods(unittest.TestCase):
         self.assertTrue(self.pb2_tester.opt_eq_ref())
 
 
-if __name__ == "__main__":
-    unittest.main()
+# if __name__ == "__main__":
+#     unittest.main()

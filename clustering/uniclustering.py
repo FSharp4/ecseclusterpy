@@ -3,10 +3,10 @@ import math
 import numpy
 from scipy.spatial.distance import pdist, squareform
 
+from data.vector_supplement import s_distance_squared
+
 
 # import numpy as np
-
-from data.vector_supplement import v_distance, s_distance_squared
 
 
 def _pdist(data):
@@ -183,12 +183,17 @@ def _linkage_naive(data: numpy.ndarray) -> numpy.ndarray:
     linkage_matrix = numpy.ndarray([n - 1, 4])
     for iteration in range(n - 1):
         min_D = numpy.nanmin(distance_matrix)
-        min_coord = numpy.asarray(distance_matrix == min_D).nonzero()[0]
+        min_coords = numpy.asarray(distance_matrix == min_D).nonzero()[0]
+        if type(min_coords) == numpy.ndarray:
+            min_coord = min_coords.reshape(int(min_coords.size / 2), 2)[0]
+        else:
+            min_coord = min_coords[0].reshape(min_coords.size / 2, 2)[0]
+
         min_coord.sort()
         low_cluster_idx = min_coord[0]
         high_cluster_idx = min_coord[1]
         true_cluster_idces = numpy.array(
-            [activity_size_matrix[low_cluster_idx][0], activity_size_matrix[high_cluster_idx][0]]
+            [activity_size_matrix[low_cluster_idx][0], activity_size_matrix[high_cluster_idx][0]], dtype=int
         )
         true_cluster_idces.sort()
         size_i = activity_size_matrix[low_cluster_idx, 1]
@@ -211,3 +216,66 @@ def _linkage_naive(data: numpy.ndarray) -> numpy.ndarray:
         iteration += 1
 
     return linkage_matrix
+
+
+"""
+NOTE ON LINKAGE METHODS: 
+These methods communicate the Ward variance criterion as distances in the 
+linkage matrix, coded as the euclidean distance between the merged 
+clusters.
+
+Book methods (such as in G. Gan, or H. Romesburg use the error square sum 
+(ESS), which can be obtained from the linkage matrix at each step by 
+squaring the distance vector (linkage_matrix[:, 2]), dividing by two, and at 
+each element i summating all elements with indices less than i.
+
+For example, the linkage matrix obtained from generate_gan() is
+
+[[0.        , 1.        , 0.5       , 2.        ],
+[2.        , 3.        , 1.11803399, 2.        ],
+[4.        , 6.        , 1.55456318, 3.        ],
+[5.        , 7.        , 4.45907315, 5.        ]]
+
+The minimum squared distance vector is 
+
+[ 0.25      ,  1.25      ,  2.41666667, 19.88333333].
+
+The ESS delta vector is 
+
+[0.125     , 0.625     , 1.20833333, 9.94166667]
+
+The ESS vector (obtainable from np.add.accumulate(ESS)) is
+[ 0.125     ,  0.75      ,  1.95833333, 11.9       ]
+
+
+
+"""
+
+
+def ess(data: numpy.ndarray, pairings: numpy.ndarray = None, series: bool = False) -> float | numpy.ndarray:
+    """
+    Exploratory usage, not towards linkage as this is inefficient
+    :param pairings: Optional linkage pairings array (format row n = (cluster index i, cluster index j)
+    :param data: Input data array
+    :return: Either the ESS of the dataset, or the ESS of the dataset over every iteration of linkage
+    """
+
+    initial_ess = 0
+    if pairings is None:
+        mean = numpy.mean(data, axis=0)
+        for i in range(data.shape[0]):
+            diff = data[i] - mean
+            initial_ess += numpy.dot(diff, diff)
+
+        return initial_ess
+    else:
+        stored_clusters = numpy.arange(0, pairings.shape[0])
+        for k in range(pairings.shape[0]):
+            i = pairings[k, 0]
+            j = pairings[k, 1]
+            n = data.shape[0] + k - 1
+            
+
+
+
+
