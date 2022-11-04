@@ -274,7 +274,7 @@ def ess(data: numpy.ndarray, pairings: numpy.ndarray = None, series: bool = Fals
             i = pairings[k, 0]
             j = pairings[k, 1]
             n = data.shape[0] + k - 1
-            
+
 
 
 
