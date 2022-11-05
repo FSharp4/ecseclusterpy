@@ -2,3 +2,4 @@
 example.csv
 *.png
 *.pyc
+test/profiling/ward/*

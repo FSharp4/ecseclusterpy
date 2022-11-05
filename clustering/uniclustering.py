@@ -60,7 +60,7 @@ def positive_min(data: numpy.ndarray) -> tuple[float, int]:
 
 def linkage(data: numpy.ndarray, naive: bool = False) -> numpy.ndarray:
     if naive:
-        return _linkage_naive(data)
+        return linkage_naive(data)
 
     n = data.shape[0]
     activity_size_matrix = numpy.ones([n, 2])
@@ -174,7 +174,7 @@ def linkage(data: numpy.ndarray, naive: bool = False) -> numpy.ndarray:
     return sorted_linkage_matrix
 
 
-def _linkage_naive(data: numpy.ndarray) -> numpy.ndarray:
+def linkage_naive(data: numpy.ndarray) -> numpy.ndarray:
     n = len(data)
     activity_size_matrix = numpy.ones([n, 2])
     activity_size_matrix[:, 0] = numpy.arange(0, n)

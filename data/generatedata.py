@@ -1,7 +1,8 @@
 import random
 
-import numpy
 import matplotlib.pyplot as plt
+import numpy
+import numpy as np
 import pandas as pd
 from sklearn.datasets import make_blobs
 
@@ -46,6 +47,7 @@ def prebaked_data2() -> numpy.ndarray:
     ]))
     return pd
 
+
 def prebaked_data2_set() -> Dataset:
     pd = prebaked_data2()
     return Dataset(pd, [1] * len(pd))
@@ -69,6 +71,11 @@ def generate(n_samples, n_features, centers, cluster_std, shuffle):
     """Wrapper function"""
     features, clusters = make_blobs(n_samples, n_features, centers=centers, cluster_std=cluster_std, shuffle=shuffle)
     return Dataset(features, clusters)
+
+
+def generate_simple(n_samples, n_features):
+    return generate(n_samples, n_features, centers=random.randint(2, int(np.sqrt(n_samples))),
+                    cluster_std=random.random() * 1.5 + 0.5, shuffle=True)
 
 
 def RAW_generate_example() -> numpy.ndarray:
