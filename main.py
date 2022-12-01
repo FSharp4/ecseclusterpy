@@ -9,7 +9,7 @@ import time
 
 from data import generatedata
 # from ward import ward
-from clustering.uniclustering import linkage
+from clustering.uniclustering import ward_linkage
 from matplotlib import pyplot as plt
 from scipy.cluster import hierarchy
 
@@ -25,7 +25,7 @@ def trial_custom(size):
     print(f"Custom trial of size {size}")
     data = generatedata.generate(n_samples=size, n_features=3, centers=1, cluster_std=0.8, shuffle=True).features
     t0 = time.time()
-    Z = linkage(data)
+    Z = ward_linkage(data)
     t1 = time.time()
     return t1 - t0
 
@@ -44,7 +44,7 @@ def process(data, name):
     t0 = time.time()
     Z1 = hierarchy.linkage(data, method="ward")
     t1 = time.time()
-    Z2 = linkage(data)
+    Z2 = ward_linkage(data)
     t2 = time.time()
     fig, axes = plt.subplots(1, 2, figsize=(15, 6))
     hierarchy.dendrogram(Z1, ax=axes[0], orientation='top')

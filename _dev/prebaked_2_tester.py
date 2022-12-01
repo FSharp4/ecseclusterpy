@@ -6,7 +6,7 @@ from data.generatedata import prebaked_data2
 
 if __name__ == "__main__":
     data = prebaked_data2()
-    Z = uniclustering.linkage(data)
+    Z = uniclustering.ward_linkage(data)
     # Z2 = hierarchy.linkage(smallest, method="ward")
     fig = plt.figure()
     hierarchy.dendrogram(Z, orientation='top')
