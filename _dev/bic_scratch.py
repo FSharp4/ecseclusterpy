@@ -10,7 +10,7 @@ odm = np.square(squareform(pdist(data)))
 fdm = np.square(squareform(pdist(data.transpose())))
 
 
-uniclustering.linkage(data, naive=True)
-uniclustering.linkage(data.transpose(), naive=True)
+uniclustering.ward_linkage(data, naive=True)
+uniclustering.ward_linkage(data.transpose(), naive=True)
 Z = hierarchy.linkage(data, method="ward")
 print("Debug POint")

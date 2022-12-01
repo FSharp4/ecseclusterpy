@@ -1,17 +1,19 @@
 import math
+from typing import List
 
-import numpy
+import numpy as np
 from scipy.spatial.distance import pdist, squareform
 
 from data.vector_supplement import s_distance_squared
+from information import criteria
 
 
-# import numpy as np
+# import np as np
 
 
 def _pdist(data):
     n = data.shape[0]
-    distance_vector = numpy.ndarray([int((n * (n - 1)) / 2)])
+    distance_vector = np.ndarray([int((n * (n - 1)) / 2)])
     ptr = 0
     for ii in range(n):
         for jj in range(ii + 1, n):
@@ -21,9 +23,9 @@ def _pdist(data):
     return distance_vector
 
 
-def _squareform(distance_vector) -> numpy.ndarray:
+def _squareform(distance_vector) -> np.ndarray:
     n = math.floor((2 + math.sqrt(4 + 8 * distance_vector.size)) / 2)
-    distance_matrix = numpy.zeros([n, n])
+    distance_matrix = np.zeros([n, n])
     ptr = 0
     for ii in range(n):
         for jj in range(ii + 1, n):
@@ -35,7 +37,7 @@ def _squareform(distance_vector) -> numpy.ndarray:
     return distance_matrix
 
 
-def merge(acceptor: numpy.ndarray, donor: numpy.ndarray) -> None:
+def merge(acceptor: np.ndarray, donor: np.ndarray) -> None:
     """
     Merges donor into acceptor.
     Both acceptor and c2 are modified in-place:
@@ -52,25 +54,31 @@ def merge(acceptor: numpy.ndarray, donor: numpy.ndarray) -> None:
 
 
 # Linear
-def positive_min(data: numpy.ndarray) -> tuple[float, int]:
-    min_entry = float(numpy.nanmin(data))
-    min_idx = int(numpy.argwhere(data == min_entry)[0][0])
+def positive_min(data: np.ndarray) -> tuple[float, int]:
+    min_entry = float(np.nanmin(data))
+    min_idx = int(np.argwhere(data == min_entry)[0][0])
     return min_entry, min_idx
 
 
-def linkage(data: numpy.ndarray, naive: bool = False) -> numpy.ndarray:
+# def ward_linkage_with_cut(data: np.ndarray, naive: bool = False, use_ess: bool = False,
+#                           criterion=bayesian_criterion.bic):
+#     Z = ward_linkage(data, naive, use_ess)
+#     ess = np.square(0.5 * Z[:, 2])
+
+
+def ward_linkage(data: np.ndarray, naive: bool = False, use_ess: bool = False) -> np.ndarray:
     if naive:
         return linkage_naive(data)
 
     n = data.shape[0]
-    activity_size_matrix = numpy.ones([n, 2])
-    activity_size_matrix[:, 0] = numpy.arange(0, n)
+    activity_size_matrix = np.ones([n, 2])
+    activity_size_matrix[:, 0] = np.arange(0, n)
     """
     Format: original cluster id (for indexing in clusters), new cluster id (for linkage matrix), cardinality
     """
-    distance_matrix: numpy.ndarray[numpy.ndarray[float]] = numpy.square(squareform(pdist(data)))
+    distance_matrix: np.ndarray[np.ndarray[float]] = np.square(squareform(pdist(data)))
     distance_matrix[distance_matrix == 0] = math.nan
-    linkage_matrix = numpy.ndarray([n - 1, 4])
+    linkage_matrix = np.ndarray([n - 1, 4])
     stack_clusters_indexes = []
     """
     `stack_clusters_indexes` stores the corresponding index of the cluster in `clusters` 
@@ -95,6 +103,7 @@ def linkage(data: numpy.ndarray, naive: bool = False) -> numpy.ndarray:
         distance_vector = distance_matrix[top_cluster_idx, :]
         # Select the cluster which is closest
         min_dist, min_cluster_idx = positive_min(distance_vector)
+        ess = 0
 
         """
         4. If cluster is in stack, pop both clusters from stack and merge.
@@ -150,7 +159,7 @@ def linkage(data: numpy.ndarray, naive: bool = False) -> numpy.ndarray:
         else:
             stack_clusters_indexes.append(min_cluster_idx)
 
-    order = numpy.argsort(linkage_matrix[:, 2])
+    order = np.argsort(linkage_matrix[:, 2])
     sorted_linkage_matrix = linkage_matrix[order]
     for i in range(n - 1):
         entry = order[i]
@@ -171,20 +180,24 @@ def linkage(data: numpy.ndarray, naive: bool = False) -> numpy.ndarray:
         if sorted_linkage_matrix[j][0] > sorted_linkage_matrix[j][1]:
             sorted_linkage_matrix[j][0], sorted_linkage_matrix[j][1] = sorted_linkage_matrix[j][1], \
                                                                        sorted_linkage_matrix[j][0]
+
+    if use_ess:
+        sorted_linkage_matrix[:, 2] = np.cumsum(0.5 * np.square(sorted_linkage_matrix[:, 2]))
+
     return sorted_linkage_matrix
 
 
-def linkage_naive(data: numpy.ndarray) -> numpy.ndarray:
+def linkage_naive(data: np.ndarray) -> np.ndarray:
     n = len(data)
-    activity_size_matrix = numpy.ones([n, 2])
-    activity_size_matrix[:, 0] = numpy.arange(0, n)
-    distance_matrix = numpy.square(squareform(pdist(data)))
+    activity_size_matrix = np.ones([n, 2])
+    activity_size_matrix[:, 0] = np.arange(0, n)
+    distance_matrix = np.square(squareform(pdist(data)))
     distance_matrix[distance_matrix == 0] = math.nan
-    linkage_matrix = numpy.ndarray([n - 1, 4])
+    linkage_matrix = np.ndarray([n - 1, 4])
     for iteration in range(n - 1):
-        min_D = numpy.nanmin(distance_matrix)
-        min_coords = numpy.asarray(distance_matrix == min_D).nonzero()[0]
-        if type(min_coords) == numpy.ndarray:
+        min_D = np.nanmin(distance_matrix)
+        min_coords = np.asarray(distance_matrix == min_D).nonzero()[0]
+        if type(min_coords) == np.ndarray:
             min_coord = min_coords.reshape(int(min_coords.size / 2), 2)[0]
         else:
             min_coord = min_coords[0].reshape(min_coords.size / 2, 2)[0]
@@ -192,7 +205,7 @@ def linkage_naive(data: numpy.ndarray) -> numpy.ndarray:
         min_coord.sort()
         low_cluster_idx = min_coord[0]
         high_cluster_idx = min_coord[1]
-        true_cluster_idces = numpy.array(
+        true_cluster_idces = np.array(
             [activity_size_matrix[low_cluster_idx][0], activity_size_matrix[high_cluster_idx][0]], dtype=int
         )
         true_cluster_idces.sort()
@@ -252,30 +265,38 @@ The ESS vector (obtainable from np.add.accumulate(ESS)) is
 """
 
 
-def ess(data: numpy.ndarray, pairings: numpy.ndarray = None, series: bool = False) -> float | numpy.ndarray:
-    """
-    Exploratory usage, not towards linkage as this is inefficient
-    :param pairings: Optional linkage pairings array (format row n = (cluster index i, cluster index j)
-    :param data: Input data array
-    :return: Either the ESS of the dataset, or the ESS of the dataset over every iteration of linkage
-    """
-
-    initial_ess = 0
-    if pairings is None:
-        mean = numpy.mean(data, axis=0)
-        for i in range(data.shape[0]):
-            diff = data[i] - mean
-            initial_ess += numpy.dot(diff, diff)
-
-        return initial_ess
-    else:
-        stored_clusters = numpy.arange(0, pairings.shape[0])
-        for k in range(pairings.shape[0]):
-            i = pairings[k, 0]
-            j = pairings[k, 1]
-            n = data.shape[0] + k - 1
+def increment_point_membership(cluster_membership, p1, p2, n) -> None:
+    working_labels = cluster_membership[:, 1]
+    working_labels[working_labels == p1] = n
+    working_labels[working_labels == p2] = n
 
 
+def calculate_point_membership(data, Z, cut_level: int):
+    cluster_membership = np.vstack([np.arange(0, data.shape[0])] * 2).T
+    working_labels = cluster_membership[:, 1]
+    n = data.shape[0]
+    for merge_pair in range(cut_level):
+        p1, p2 = Z[merge_pair, :2]
+        # working_labels[working_labels == p1] = n
+        # working_labels[working_labels == p2] = n
+        increment_point_membership(cluster_membership, p1, p2, n)
+        n += 1
+
+    return cluster_membership
 
 
+def get_cluster_datapoint_mapping(Z: np.ndarray) -> dict[int, np.ndarray]:
+    n_merged_nodes = Z.shape[0]
+    n = n_merged_nodes + 1
+    node_merge_LUT = np.hstack([np.atleast_2d(np.arange(0, n_merged_nodes)).T + n, Z[:, :2]]).astype(int)
+    cluster_point_map: dict[int, np.ndarray] = {}
 
+    for i in range(n):
+        cluster_point_map[i] = np.array([i])
+
+    for (i, p1, p2) in node_merge_LUT:
+        merged1 = cluster_point_map[p1]
+        merged2 = cluster_point_map[p2]
+        cluster_point_map[i] = np.hstack([merged1, merged2])
+
+    return cluster_point_map

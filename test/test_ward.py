@@ -11,12 +11,12 @@ class WardTest():
         self.data = data
 
     def opt_eq_naive(self):
-        z1 = uniclustering.linkage(self.data)
-        z2 = uniclustering.linkage(self.data, naive=True)
+        z1 = uniclustering.ward_linkage(self.data)
+        z2 = uniclustering.ward_linkage(self.data, naive=True)
         return np.allclose(z1, z2)
 
     def opt_eq_ref(self):
-        z1 = uniclustering.linkage(self.data)
+        z1 = uniclustering.ward_linkage(self.data)
         z2 = hierarchy.linkage(self.data, method="ward")
         return np.allclose(z1, z2)
 

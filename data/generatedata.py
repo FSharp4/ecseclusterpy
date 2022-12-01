@@ -58,18 +58,22 @@ def generate_example() -> Dataset:
     return Dataset(features, clusters)
 
 
-def generate_random() -> Dataset:
+def generate_random(verbose=False) -> Dataset:
     n_features = random.randint(2, 16)
     centers = random.randint(2, 16)
     cluster_std = random.uniform(0.1, 2.0)
+    if verbose:
+        print(f"Parameters: {n_features}, {centers}, {cluster_std}")
     features, clusters = make_blobs(n_samples=2000, n_features=n_features, centers=centers, cluster_std=cluster_std,
                                     shuffle=True)
     return Dataset(features, clusters)
 
 
-def generate(n_samples, n_features, centers, cluster_std, shuffle):
+def generate(n_samples, n_features, centers, cluster_std, shuffle, seed=None):
     """Wrapper function"""
-    features, clusters = make_blobs(n_samples, n_features, centers=centers, cluster_std=cluster_std, shuffle=shuffle)
+    if seed is None:
+        seed = random.randint(0, 10000)
+    features, clusters = make_blobs(n_samples, n_features, centers=centers, cluster_std=cluster_std, shuffle=shuffle, random_state=seed)
     return Dataset(features, clusters)
 
 

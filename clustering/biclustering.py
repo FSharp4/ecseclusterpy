@@ -1,6 +1,7 @@
 from typing import List
 
 import numpy as np
+from scipy.cluster import hierarchy
 
 from clustering import uniclustering
 
@@ -39,13 +40,18 @@ def cubeform(element_distance_vectors) -> np.ndarray:
     return distance_tensor
 
 
-def naive_separated(data: np.ndarray):
-    Z_features = uniclustering.linkage(data)
-    Z_columns = uniclustering.linkage(data.T)
+def reference_optimized(data: np.ndarray):
+    Z_features = hierarchy.linkage(data, method="ward")
+    Z_columns = hierarchy.linkage(data.T, method="ward")
+    return Z_features, Z_columns
+
+def custom_optimized(data: np.ndarray):
+    Z_features = uniclustering.ward_linkage(data)
+    Z_columns = uniclustering.ward_linkage(data.T)
     return Z_features, Z_columns
 
 
-def naive_integrated_slow(data: np.ndarray):
+def custom_naive(data: np.ndarray):
     n = data.shape[0]
     m = data.shape[1]
     clustering_sizes = np.ones([n + m, 2], dtype=int)
