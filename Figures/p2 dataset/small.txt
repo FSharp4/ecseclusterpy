@@ -1,0 +1,30 @@
+Mean Predicted # of Clusters
+                               BIC/ESS    AIC/ESS      Elbow
+Few Clusters/Low Variance     5.200000   5.133333  32.233333
+Few Clusters/High Variance    5.433333   5.433333   4.700000
+Many Clusters/Low Variance   13.400000  11.800000   7.500000
+Many Clusters/High Variance   9.766667   8.933333   3.900000
+# Of Clusters Prediction Standard Deviation
+                              BIC/ESS   AIC/ESS      Elbow
+Few Clusters/Low Variance    0.400000  0.339935  30.975994
+Few Clusters/High Variance   0.495536  0.495536   2.177919
+Many Clusters/Low Variance   1.781385  1.681269   5.018300
+Many Clusters/High Variance  1.686877  1.289272   1.795364
+Mean Cross Validation Predictions
+                               BIC/ESS    AIC/ESS      Elbow
+Few Clusters/Low Variance     5.096667   5.073333  27.250000
+Few Clusters/High Variance    5.320000   5.276667   4.586667
+Many Clusters/Low Variance   12.953333  11.053333   6.726667
+Many Clusters/High Variance   9.650000   8.510000   3.573333
+Mean Cross Validation Prediction Standard Deviations
+                              BIC/ESS   AIC/ESS      Elbow
+Few Clusters/Low Variance    0.044939  0.013333  17.990053
+Few Clusters/High Variance   0.255115  0.232077   1.368105
+Many Clusters/Low Variance   1.401519  1.213317   2.103432
+Many Clusters/High Variance  1.060545  0.833389   1.081719
+Standard Deviation of Mean Cross Validation Predictions
+                              BIC/ESS   AIC/ESS      Elbow
+Few Clusters/Low Variance    0.258822  0.250244  16.926759
+Few Clusters/High Variance   0.418250  0.331344   1.518932
+Many Clusters/Low Variance   1.272198  1.088955   3.268428
+Many Clusters/High Variance  0.934077  0.680857   1.145406

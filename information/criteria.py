@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.linalg import LinAlgError
 
 from clustering import uniclustering
 
@@ -32,7 +33,12 @@ def _calculate_information_criterion_elements(data):
     det_cov: float = np.linalg.det(cov)
     inv_cov: np.ndarray
     if det_cov > 0 and not np.allclose(det_cov, 0):
-        inv_cov = np.linalg.inv(cov)
+        try:
+            inv_cov = np.linalg.inv(cov)
+        except LinAlgError:
+            inv_cov = np.linalg.pinv(cov)
+            eigenvalues = np.linalg.eigvals(cov)
+            det_cov = np.real(np.product(eigenvalues[eigenvalues > 1e-12]))
     else:
         inv_cov = np.linalg.pinv(cov)
         eigenvalues = np.linalg.eigvals(cov)

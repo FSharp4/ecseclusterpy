@@ -30,9 +30,9 @@ if __name__ == "__main__":
                         _data = np.vstack([_data, partitions[_k]])
 
                 _Z = hierarchy.linkage(_data, method="ward")
-                bicess_significant_clusters[iptr, i, k] = dendrogram_cut.scheme4(_data, _Z)
-                aicess_significant_clusters[iptr, i, k] = dendrogram_cut.scheme5(_data, _Z)
-                elbow_significant_clusters[iptr, i, k] = dendrogram_cut.elbow_ess(_data, _Z)
+                bicess_significant_clusters[iptr, i, k] = dendrogram_cut.bicess_cut(_data, _Z)
+                aicess_significant_clusters[iptr, i, k] = dendrogram_cut.aicess_cut(_data, _Z)
+                elbow_significant_clusters[iptr, i, k] = dendrogram_cut.elbow_cut(_data, _Z)
 
 
         mean_clusters_detected = np.mean(bicess_significant_clusters[iptr, :, :])
@@ -46,5 +46,3 @@ if __name__ == "__main__":
         print(f"for {stdev} elbow detects {mean_clusters_detected} plusminus {stdev_clusters_detected}")
 
         iptr += 1
-
-    # print(significant_clusters)

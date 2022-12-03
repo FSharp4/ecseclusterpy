@@ -23,13 +23,15 @@ def scheme3(data: np.ndarray, Z: np.ndarray):
 
     return _prototype_measure_2(x, y, threshold=0.95)
 
-def scheme4(data: np.ndarray, Z: np.ndarray):
+
+def bicess_cut(data: np.ndarray, Z: np.ndarray):
     x = Z[:, 2]
     y = np.gradient(criteria.calculate_bic_vector(data, Z))
 
     return _prototype_measure(x, y, threshold=0.9)
 
-def scheme5(data: np.ndarray, Z: np.ndarray):
+
+def aicess_cut(data: np.ndarray, Z: np.ndarray):
     x = Z[:, 2]
     y = np.gradient(criteria.calculate_aic_vector(data, Z))
     return _prototype_measure(x, y, threshold=0.9)
@@ -43,7 +45,7 @@ def _prototype_measure(x_measure, y_measure, threshold=0.95):
     p = norm.cdf(z)
     significant_clusters = 0
     for i in range(len(p)):
-        if p[-(i+1)] < threshold:
+        if p[-(i + 1)] < threshold:
             significant_clusters = i + 1
             break
 
@@ -73,13 +75,14 @@ def curvature(x: np.ndarray, y: np.ndarray):
     return curvature
 
 
-def elbow_ess(data: np.ndarray, Z: np.ndarray):
+def elbow_cut(data: np.ndarray, Z: np.ndarray):
     x = np.arange(1, data.shape[0])
     ess = variance.ward_ess(Z[:, 2])
     y = -(ess[::-1] - ess[-1])
     k = curvature(x, y)
-    significant_clusters = data.shape[0] - np.argmax(k)
-    return significant_clusters
+    index = np.argmax(k)
+    return x[index]
+
 
 def find_cutting_distance(Z: np.ndarray, significant_clusters: int):
     low_d = Z[:, -2][-significant_clusters]
